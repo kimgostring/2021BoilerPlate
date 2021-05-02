@@ -23,7 +23,7 @@ mongoose.connect(`mongodb+srv://${configJS.mongoPri.MONGO_ID}:${configJS.mongoPr
 
 // 저번에 만든 아주 간단한 라우트
 app.get('/', (req, res) => {
-  res.send('Hello World!');
+  res.send('Hello World! 저장하면 자동으로 서버가 꺼졌다 켜짐');
 }); // root dir에 가면 해당 글귀 출력
 
 // 회원가입을 위한 라우트
