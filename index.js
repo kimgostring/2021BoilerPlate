@@ -38,7 +38,7 @@ app.post('/register', (req, res) => {
     if (err) // 에러 있을 때, client에 err 있다고 json 형식으로 전달
       return res.json({ 
         success: false, 
-        err 
+        err: err
       });
     // 성공했을 때, status(200)은 성공했다라는 표시
     return res.status(200).json({
