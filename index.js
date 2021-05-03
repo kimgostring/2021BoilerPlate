@@ -14,9 +14,9 @@ app.use(bodyParser.urlencoded({extended: true}));
 // application/json -> 이러한 타입을 분석하여 가져올 수 있게 해줌
 app.use(bodyParser.json()); 
 
-const configJS = require('./config'); // config.js 파일 추가
+const config = require('./config/key'); // key.js 파일 추가
 const mongoose = require('mongoose');
-mongoose.connect(`mongodb+srv://${configJS.mongoPri.MONGO_ID}:${configJS.mongoPri.MONGO_PW}@boilerplate.ia8ve.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`, {
+mongoose.connect(config.mongoPri.MONGO_URL, {
   useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false // error 안 뜨게 해 주는 구문
 }).then(() => console.log('MongoDB Connected...')) // 연결 잘 됐는지 확인
   .catch(err => console.log(err)); // 연결 안 된 이유 확인
