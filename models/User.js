@@ -2,6 +2,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt"); // 암호화에 이용
 const saltRounds = 10;
+const jwt = require("jsonwebtoken");
 
 // 스키마 생성
 const userSchema = mongoose.Schema({
@@ -36,6 +37,7 @@ const userSchema = mongoose.Schema({
 });
 
 userSchema.pre("save", function(next) {
+    // ES5 문법에서만 this 바인딩 가능, ES6 문법인 arrow func 에서는 불가능
     let user = this; // userSchema 가리킴
 
     if (user.isModified("password")) { // 비밀번호가 변경될 때만 실행
@@ -54,6 +56,37 @@ userSchema.pre("save", function(next) {
         next();
     }
 });
+
+// comparePassword 메소드 생성
+userSchema.methods.comparePassword = function(plainPw, cbFunc) { // cbFunc를 실행하면 함수 호출부로 돌아가게 됨
+    // plainPW와 암호화되어 저장된 비밀번호 비교
+    // plainPW를 암호화하여 비교 (저장된 비밀번호를 복호화하는 건 불가능)
+    bcrypt.compare(plainPw, this.password, function(err, isMatch) {
+        // 비번 다를 때
+        if (err) return cbFunc(err); 
+        // 비번 같을 때 (isMatch === true)
+        cbFunc(err, isMatch); 
+    })
+}
+
+// getToken 메소드 생성
+userSchema.methods.genToken = function(cbFunc) {
+    let user = this;
+
+    // jsonwebtoken 이용해서 token을 생성
+    // sign 함수의 첫 번째 파라미터는 plain object여야 하므로, toHexString() 함수 사용
+    // toHexString() : Return the ObjectID id as a 24byte hex string representation.
+    // toHexString()은 toString()보다 더 작은 의미의 함수임
+    const token = jwt.sign(user._id.toHexString(), "secretToken");
+    // user._id + "secretToken" => token 생성
+    // 이후, 나중에 token을 해석할 때 "secretToken"을 넣어 user._id를 찾아내게 됨
+    // token을 통해 유저 식별 가능
+    user.token = token;
+    user.save(function(err, userInfo) {
+        if (err) return cbFunc(err);
+        cbFunc(null, userInfo);
+    })
+}
 
 // 스키마를 모델로 감싸기
 const User = mongoose.model("User", userSchema);
