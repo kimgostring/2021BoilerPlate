@@ -9,6 +9,7 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 
 const { User } = require("./models/User"); // user model 가져오기
+const { auth } = require("./middleware/auth");
 
 // body parser에 옵션 주기
 // application/x-www-form-urlencoded -> 이렇게 생긴 데이터를 분석하여 가져올 수 있게 해줌
@@ -30,7 +31,7 @@ app.get('/', (req, res) => {
 }); // root dir에 가면 해당 글귀 출력
 
 // 회원가입을 위한 라우트
-app.post('/register', (req, res) => {
+app.post('/api/users/register', (req, res) => {
   // 회원가입 시 필요한 정보들을 client에서 가져오면
   // 그것들을 DB에 넣어줌
   // 1. user model 가져와 인스턴스 만들기
@@ -51,7 +52,7 @@ app.post('/register', (req, res) => {
 })
 
 // 로그인을 위한 라우트
-app.post('/login', (req, res) => {
+app.post('/api/users/login', (req, res) => {
   // 1. 요청된 email을 DB에서 찾기
   User.findOne({ email: req.body.email }, (err, userInfo) => {
     if(!userInfo) return res.json({
@@ -83,6 +84,25 @@ app.post('/login', (req, res) => {
         });
       });
     });
+  });
+});
+
+// auth route 
+app.get('/api/users/auth', auth, (req, res) => { 
+  // auth 미들웨어 : request 받은 뒤, cb 전 무언가를 해줌
+  // 미들웨어를 통과해 여기까지 온 경우, auth : true인 경우 
+  // client에 여기 왔다는 정보 전달
+  res.status(200).json({
+    // 유저 정보들 제공
+    // 이를 통해, 어느 페이지에서든 유저 정보를 이용할 수 있게 됨
+    _id: req.user._id, // 앞서 request에 user 요소 추가했었음
+    isAdmin: req.user.role === 0 ? false : true, // 0일 때 일반 유저라고 정책을 설정했었음
+    isAuth: true,
+    email: req.user.email,
+    name: req.user.name,
+    lastname: req.user.lastname,
+    role: req.user.role,
+    image: req.user.image
   });
 });
 

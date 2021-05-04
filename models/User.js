@@ -88,6 +88,19 @@ userSchema.methods.genToken = function(cbFunc) {
     })
 }
 
+userSchema.statics.findByToken = function(token, cbFunc) {
+    let user = this;
+
+    // token을 복호화
+    jwt.verify(token, "secretToken", function(err, decoded) {
+        // user id 이용, user 찾은 뒤 client의 token과 DB의 token 비교
+        user.findOne({ "_id": decoded, "token": token }, function(err, userInfo) {
+            if (err) return cbFunc(err);
+            cbFunc(null, userInfo);
+        });
+    });
+}
+
 // 스키마를 모델로 감싸기
 const User = mongoose.model("User", userSchema);
 
