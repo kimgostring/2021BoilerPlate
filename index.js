@@ -49,7 +49,7 @@ app.post('/api/users/register', (req, res) => {
       success: true
     })
   }); 
-})
+});
 
 // 로그인을 위한 라우트
 app.post('/api/users/login', (req, res) => {
@@ -104,6 +104,19 @@ app.get('/api/users/auth', auth, (req, res) => {
     role: req.user.role,
     image: req.user.image
   });
+});
+
+// logout route
+app.get('/api/users/logout', auth, (req, res) => {
+  // auth 미들웨어에서 값 가져오기 성공한 경우
+  User.findOneAndUpdate({ _id: req.user._id }, // 찾기
+    { token: "" }, // 업데이트 시키기
+    (err, userInfo) => {
+      if(err) return res.json({ success: false, err });
+      return res.status(200).send({
+        success: true
+      });
+    }); 
 });
 
 app.listen(port, () => { // 해당 포트에서 앱 실행, 해당 앱이 5000을 listen하면 콘솔 출력 

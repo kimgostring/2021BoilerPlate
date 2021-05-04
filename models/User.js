@@ -38,7 +38,7 @@ const userSchema = mongoose.Schema({
 
 userSchema.pre("save", function(next) {
     // ES5 문법에서만 this 바인딩 가능, ES6 문법인 arrow func 에서는 불가능
-    let user = this; // userSchema 가리킴
+    const user = this; // userSchema 가리킴
 
     if (user.isModified("password")) { // 비밀번호가 변경될 때만 실행
         // 비밀번호를 암호화 시킴
@@ -71,7 +71,7 @@ userSchema.methods.comparePassword = function(plainPw, cbFunc) { // cbFunc를 �
 
 // getToken 메소드 생성
 userSchema.methods.genToken = function(cbFunc) {
-    let user = this;
+    const user = this;
 
     // jsonwebtoken 이용해서 token을 생성
     // sign 함수의 첫 번째 파라미터는 plain object여야 하므로, toHexString() 함수 사용
@@ -86,10 +86,10 @@ userSchema.methods.genToken = function(cbFunc) {
         if (err) return cbFunc(err);
         cbFunc(null, userInfo);
     })
-}
+};
 
 userSchema.statics.findByToken = function(token, cbFunc) {
-    let user = this;
+    const user = this;
 
     // token을 복호화
     jwt.verify(token, "secretToken", function(err, decoded) {
@@ -99,7 +99,7 @@ userSchema.statics.findByToken = function(token, cbFunc) {
             cbFunc(null, userInfo);
         });
     });
-}
+};
 
 // 스키마를 모델로 감싸기
 const User = mongoose.model("User", userSchema);
