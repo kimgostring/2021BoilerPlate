@@ -5,17 +5,20 @@ const app = express(); // 모듈의 함수를 통해 새 express 앱 생성
 const port = 5000; // 몇 번이든 상관 없음
 // 이 위치를 listen으로 연결했을 때 해당 위치로 가면 앱 실행
 
-const bodyParser = require("body-parser");
+// const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 
 const { User } = require("./models/User"); // user model 가져오기
 const { auth } = require("./middleware/auth");
 
-// body parser에 옵션 주기
-// application/x-www-form-urlencoded -> 이렇게 생긴 데이터를 분석하여 가져올 수 있게 해줌
-app.use(bodyParser.urlencoded({extended: true})); 
-// application/json -> 이러한 타입을 분석하여 가져올 수 있게 해줌
-app.use(bodyParser.json()); 
+// v4.16.0 이상 버전의 express에는 body parser가 내장되어 있음
+// // body parser에 옵션 주기
+// // application/x-www-form-urlencoded -> 이렇게 생긴 데이터를 분석하여 가져올 수 있게 해줌
+// app.use(bodyParser.urlencoded({extended: true})); 
+// // application/json -> 이러한 타입을 분석하여 가져올 수 있게 해줌
+// app.use(bodyParser.json()); 
+app.use(express.urlencoded({extended: true}));
+app.use(express.json());
 app.use(cookieParser());
 
 const config = require('./config/key'); // key.js 파일 추가
@@ -113,7 +116,7 @@ app.get('/api/users/logout', auth, (req, res) => {
     { token: "" }, // 업데이트 시키기
     (err, userInfo) => {
       if(err) return res.json({ success: false, err });
-      return res.status(200).send({
+      res.status(200).send({
         success: true
       });
     }); 
