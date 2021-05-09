@@ -33,6 +33,12 @@ app.get('/', (req, res) => {
   res.send('Hello World! 저장하면 자동으로 서버가 꺼졌다 켜짐');
 }); // root dir에 가면 해당 글귀 출력
 
+// 테스트용 서버 코드
+app.get("/api/hello", (req, res) => {
+  res.send("안녕하세요~");
+});
+// 이후 port 5000을 listen, port 3000으로 보낸 요청을 받을 수 X
+
 // 회원가입을 위한 라우트
 app.post('/api/users/register', (req, res) => {
   // 회원가입 시 필요한 정보들을 client에서 가져오면
