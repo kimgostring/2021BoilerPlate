@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux';
-// import user from './user_reducer'; // 아직 생성 X
+import user from './user_reducer';
 
 const rootReducer = combineReducers({
-    // user,
+    user
 });
 
 export default rootReducer;
