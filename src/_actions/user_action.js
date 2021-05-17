@@ -2,7 +2,8 @@
 import axios from 'axios';
 import {
     LOGIN_USER,
-    REGISTER_USER
+    REGISTER_USER,
+    AUTH_USER
 } from './types';
 
 export function loginUser(dataToSubmit) {
@@ -27,6 +28,19 @@ export function registerUser(dataToSubmit) {
     
     return {
         type: REGISTER_USER,
+        payload: request
+    };
+}
+
+export function authUser() {
+    // get method일 때에는 body가 필요 X, 쿼리 스트링을 통해 전달됨
+    // body는 post 방식에서 
+    // get은 데이터 요청 시에만 사용, post는 데이터 생성/수정할 때 사용 
+    const request = axios.get('/api/users/auth')
+        .then(res => res.data);
+
+    return {
+        type: AUTH_USER,
         payload: request
     };
 }
