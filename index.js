@@ -28,17 +28,6 @@ mongoose.connect(config.mongoPri.MONGO_URL, {
 }).then(() => console.log('MongoDB Connected...')) // 연결 잘 됐는지 확인
   .catch(err => console.log(err)); // 연결 안 된 이유 확인
 
-// 저번에 만든 아주 간단한 라우트
-app.get('/', (req, res) => {
-  res.send('Hello World! 저장하면 자동으로 서버가 꺼졌다 켜짐');
-}); // root dir에 가면 해당 글귀 출력
-
-// 테스트용 서버 코드
-app.get("/api/hello", (req, res) => {
-  res.send("안녕하세요~");
-});
-// 이후 port 5000을 listen, port 3000으로 보낸 요청을 받을 수 X
-
 // 회원가입을 위한 라우트
 app.post('/api/users/register', (req, res) => {
   // 회원가입 시 필요한 정보들을 client에서 가져오면
@@ -65,7 +54,7 @@ app.post('/api/users/login', (req, res) => {
   // 1. 요청된 email을 DB에서 찾기
   User.findOne({ email: req.body.email }, (err, userInfo) => {
     if(!userInfo) return res.json({
-      loginSuccess: false,
+      success: false,
       message: "제공된 이메일에 해당하는 유저가 없습니다. "
     })
 
@@ -73,7 +62,7 @@ app.post('/api/users/login', (req, res) => {
     userInfo.comparePassword(req.body.password, (err, isMatch) => {
       // 비밀번호 틀린 경우
       if (!isMatch) return res.json({
-        loginSuccess: false,
+        success: false,
         message: "비밀번호가 틀렸습니다. "
       });
 
@@ -88,7 +77,7 @@ app.post('/api/users/login', (req, res) => {
         res.cookie("x_auth", userInfo.token) // 이름이 x_auth, 내용이 토큰인 쿠키 저장됨
         .status(200)
         .json({ 
-          loginSuccess: true,
+          success: true,
           userId: userInfo._id
         });
       });
