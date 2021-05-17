@@ -33,7 +33,7 @@ function LoginPage(props) { // 페이지 이동에 사용됨
         // axios 이용, POST http method 이용하기 - 이 작업을 loginUser에서 하게 됨
         dispatch(loginUser(body)) // action 취하기
             .then(res => { // 성공 시 랜딩페이지로 이동 (react에서 사용하는 방식)
-                if(res.payload.loginSuccess) {
+                if(res.payload.success) {
                     props.history.push('/');
                 } else {
                     alert("Error");
