@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux'; 
 import { loginUser } from '../../../_actions/user_action';
 import { withRouter } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
 
 function LoginPage(props) { // 페이지 이동에 사용됨
     const dispatch = useDispatch();
@@ -12,6 +13,8 @@ function LoginPage(props) { // 페이지 이동에 사용됨
     const [Email, setEmail] = useState("");
     const [Password, setPassword] = useState("");
 
+    const { register, handleSubmit, formState: { errors } } = useForm();
+
     const onEmailHandler = (event) => {
         setEmail(event.currentTarget.value);
     };
@@ -20,11 +23,11 @@ function LoginPage(props) { // 페이지 이동에 사용됨
         setPassword(event.currentTarget.value);
     };
 
-    const onSubmitHandler = (event) => {
+	// handleSubmit 함수로 감싸게 될 경우, 첫 번째 인자는 data
+    const onSubmitHandler = (data, event) => {
         // state 안에 입력한 정보들이 저장되어 있는 상태
         event.preventDefault(); // 안 해주게 되면, 페이지 refresh됨 (default)
         // refresh되는 경우, 뒤에 하려고 하는 작업 해줄 수가 없게 됨
-
         let body = {
             email: Email,
             password: Password
@@ -49,15 +52,30 @@ function LoginPage(props) { // 페이지 이동에 사용됨
             width: '100%', height: '100vh'
         }}>
             <form style={{ display: 'flex', flexDirection: 'column'}}
-                onSubmit={onSubmitHandler}
+                onSubmit={handleSubmit(onSubmitHandler)}
             >
                 <label>Email</label>
-                <input type="email" onChange={onEmailHandler} /> 
+                <input {...register("email", {
+                    required: "Email is required.",
+                    pattern: {
+                        value: /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/,
+                        message: "Email format is wrong."
+                    }
+                })} onChange={onEmailHandler} /> 
+                {errors.email?.message}
+
                 <label>Password</label>
-                <input type="password" onChange={onPasswordHandler} />
+                <input type="password" {...register("password", {
+                    required: "Password is required.", 
+                    minLength: {
+                        value: 5,
+                        message: "Password is too short."
+                    }
+                })} onChange={onPasswordHandler} />
+                {errors.password?.message}
                 <br />
 
-                <button>Login</button>
+                <button type="submit">Login</button>
             </form>
         </div>
     )

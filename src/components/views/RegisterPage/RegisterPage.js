@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux'; 
 import { registerUser } from '../../../_actions/user_action';
 import { withRouter } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
 
 function RegisterPage(props) {
     const dispatch = useDispatch();
@@ -10,6 +11,8 @@ function RegisterPage(props) {
     const [Name, setName] = useState("");
     const [Password, setPassword] = useState("");
     const [ConfirmPW, setConfirmPW] = useState("");
+
+    const { register, handleSubmit, formState: { errors } } = useForm();
 
     const onEmailHandler = (event) => {
         setEmail(event.currentTarget.value);
@@ -27,13 +30,9 @@ function RegisterPage(props) {
         setConfirmPW(event.currentTarget.value);
     };
 
-    const onSubmitHandler = (event) => {
+    const onSubmitHandler = (data, event) => {
         event.preventDefault();
-    
-        if (Password !== ConfirmPW) {
-            return alert("비밀번호가 일치하지 않습니다. ");
-        }
-        
+
         let body = {
             email: Email,
             name: Name,
@@ -56,19 +55,42 @@ function RegisterPage(props) {
             width: '100%', height: '100vh'
         }}>
             <form style={{display: 'flex', flexDirection: 'column'}}
-                onSubmit={onSubmitHandler}
+                onSubmit={handleSubmit(onSubmitHandler)}
             >
                 <label>Email</label>
-                <input type="email" onChange={onEmailHandler} /> 
+                <input {...register("email", {
+                    required: "Email is required.",
+                    pattern: {
+                        value: /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/,
+                        message: "Email format is wrong."
+                    }
+                })} onChange={onEmailHandler} /> 
+                {errors.email?.message}
+
                 <label>Name</label>
-                <input type="text" onChange={onNameHandler} />
+                <input {...register("name", {
+                    required: "Name is required."
+                })} onChange={onNameHandler} />
+                {errors.name?.message}
+
                 <label>Password</label>
-                <input type="password" onChange={onPasswordHandler} />
+                <input type="password" {...register("password", {
+                    required: "Password is required.",
+                    minLength: {
+                        value: 5,
+                        message: "Password is too short."
+                    }
+                })} onChange={onPasswordHandler} />
+                {errors.password?.message}
+
                 <label>Confirm Password</label>
-                <input type="password" onChange={onConfirmPWHandler} />
+                <input type="password" {...register("confirmPW", {
+                    validate: value => value === Password || "Password doesn't match."
+                })} onChange={onConfirmPWHandler} />
+                {errors.confirmPW?.message}
                 <br />
 
-                <button>Sign Up</button>
+                <button type="submit">Sign Up</button>
             </form>
         </div>
     );
