@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { registerUser } from '../../../_actions/user_action';
 import { withRouter } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { Button, Input } from 'antd';
 
 function RegisterPage(props) {
     const dispatch = useDispatch();
@@ -54,11 +55,10 @@ function RegisterPage(props) {
             display: 'flex', justifyContent: 'center', alignItems: 'center',
             width: '100%', height: '100vh'
         }}>
-            <form style={{display: 'flex', flexDirection: 'column'}}
+            <form style={{ display: 'flex', flexDirection: 'column', color: 'grey' }}
                 onSubmit={handleSubmit(onSubmitHandler)}
             >
-                <label>Email</label>
-                <input {...register("email", {
+                <Input placeholder="Email" {...register("email", {
                     required: "Email is required.",
                     pattern: {
                         value: /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/,
@@ -66,15 +66,15 @@ function RegisterPage(props) {
                     }
                 })} onChange={onEmailHandler} /> 
                 {errors.email?.message}
+                <br />
 
-                <label>Name</label>
-                <input {...register("name", {
+                <Input placeholder="Name" {...register("name", {
                     required: "Name is required."
                 })} onChange={onNameHandler} />
                 {errors.name?.message}
+                <br />
 
-                <label>Password</label>
-                <input type="password" {...register("password", {
+                <Input.Password placeholder="Password" {...register("password", {
                     required: "Password is required.",
                     minLength: {
                         value: 5,
@@ -82,15 +82,16 @@ function RegisterPage(props) {
                     }
                 })} onChange={onPasswordHandler} />
                 {errors.password?.message}
+                <br />
 
-                <label>Confirm Password</label>
-                <input type="password" {...register("confirmPW", {
+                <Input.Password placeholder="Confirm Password" {...register("confirmPW", {
                     validate: value => value === Password || "Password doesn't match."
                 })} onChange={onConfirmPWHandler} />
                 {errors.confirmPW?.message}
                 <br />
 
-                <button type="submit">Sign Up</button>
+                <Button shape="round" htmlType="submit">Sign Up</Button>
+                <a href='/login' style={{ color: 'grey' }}>Login now</a>
             </form>
         </div>
     );

@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import { loginUser } from '../../../_actions/user_action';
 import { withRouter } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { Button, Input } from 'antd';
 
 function LoginPage(props) { // 페이지 이동에 사용됨
     const dispatch = useDispatch();
@@ -38,6 +39,7 @@ function LoginPage(props) { // 페이지 이동에 사용됨
         dispatch(loginUser(body)) // action 취하기
             .then(res => { // 성공 시 랜딩페이지로 이동 (react에서 사용하는 방식)
                 if(res.payload.success) {
+                    window.localStorage.setItem('userId', res.payload.userId);
                     props.history.push('/');
                 } else {
                     alert("Error");
@@ -51,11 +53,10 @@ function LoginPage(props) { // 페이지 이동에 사용됨
             display: 'flex', justifyContent: 'center', alignItems: 'center',
             width: '100%', height: '100vh'
         }}>
-            <form style={{ display: 'flex', flexDirection: 'column'}}
+            <form style={{ display: 'flex', flexDirection: 'column', color: 'grey'}}
                 onSubmit={handleSubmit(onSubmitHandler)}
             >
-                <label>Email</label>
-                <input {...register("email", {
+                <Input placeholder="Email" {...register("email", {
                     required: "Email is required.",
                     pattern: {
                         value: /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/,
@@ -63,9 +64,9 @@ function LoginPage(props) { // 페이지 이동에 사용됨
                     }
                 })} onChange={onEmailHandler} /> 
                 {errors.email?.message}
+                <br />
 
-                <label>Password</label>
-                <input type="password" {...register("password", {
+                <Input.Password placeholder="Password" {...register("password", {
                     required: "Password is required.", 
                     minLength: {
                         value: 5,
@@ -75,7 +76,8 @@ function LoginPage(props) { // 페이지 이동에 사용됨
                 {errors.password?.message}
                 <br />
 
-                <button type="submit">Login</button>
+                <Button shape="round" htmlType="submit">Login</Button>
+                <a href='/register' style={{ color: 'grey' }}>Register now</a>
             </form>
         </div>
     )
